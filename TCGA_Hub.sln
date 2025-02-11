@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCGA_Scrapper", "TCGA_Scrap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{45CD273A-3C49-4F13-8BF1-63343B3AAC0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCGA_UI", "TCGA_UI\TCGA_UI.csproj", "{1D2D16CF-F77F-4C93-8896-83789B3D2FA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{45CD273A-3C49-4F13-8BF1-63343B3AAC0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45CD273A-3C49-4F13-8BF1-63343B3AAC0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45CD273A-3C49-4F13-8BF1-63343B3AAC0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D2D16CF-F77F-4C93-8896-83789B3D2FA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D2D16CF-F77F-4C93-8896-83789B3D2FA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D2D16CF-F77F-4C93-8896-83789B3D2FA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D2D16CF-F77F-4C93-8896-83789B3D2FA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

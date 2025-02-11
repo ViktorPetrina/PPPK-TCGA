@@ -9,6 +9,6 @@ namespace DataLayer.Repository
     public interface ISimpleFileRepository
     {
         Task Create(string objectName, string filePath, string contentType);
-        Task ReadAll(string objectName, string filePath);
+        Task<IEnumerable<string>> ReadAll();
     }
 }

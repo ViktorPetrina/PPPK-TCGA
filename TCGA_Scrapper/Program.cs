@@ -24,11 +24,14 @@ namespace TCGA_Scrapper
 
         static async Task Main(string[] args)
         {
-            ScrapeWeb();
+            //ScrapeWeb();
 
-            await DownloadAndUnpackFiles();
+            //await DownloadAndUnpackFiles();
 
-            await UploadToDatabse();
+            //await UploadToDatabse();
+
+            var repo = new MinioRepository();
+            var scans = await repo.ReadAll();
         }
 
         private static async Task UploadToDatabse()
