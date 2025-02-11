@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using DataLayer.Repository;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using TCGA_Scrapper.Utilities;
@@ -26,6 +27,30 @@ namespace TCGA_Scrapper
             ScrapeWeb();
 
             await DownloadAndUnpackFiles();
+
+            await UploadToDatabse();
+        }
+
+        private static async Task UploadToDatabse()
+        {
+            ISimpleFileRepository repo = new MinioRepository();
+
+            var filePaths = FileUtils.GetAllFilesFromDirectory(DECOMPRESSED_FILES_PATH);
+            var contentType = "text/tab-separated-values";
+
+            foreach (var filePath in filePaths)
+            {
+                var objectName = Path.GetFileName(filePath);
+                try
+                {
+                    await repo.Create(objectName, filePath, contentType);
+                    Console.WriteLine($"Successfully uploaded {objectName}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to upload {objectName}: {ex.Message}");
+                }
+            }
         }
 
         private static async Task DownloadAndUnpackFiles()

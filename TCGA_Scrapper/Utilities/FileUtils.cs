@@ -4,6 +4,18 @@ namespace TCGA_Scrapper.Utilities
 {
     public static class FileUtils
     {
+        public static IEnumerable<string> GetAllFilesFromDirectory(string directory)
+        {
+            if (Directory.Exists(directory))
+            {
+                return new List<string>(Directory.GetFiles(directory));
+            }
+            else
+            {
+                throw new DirectoryNotFoundException($"The directory '{directory}' does not exist.");
+            }
+        }
+
         public static void DecompressFile(string source, string destination)
         {
             using (FileStream compressedStream = new FileStream(source, FileMode.Open, FileAccess.Read))
@@ -18,7 +30,7 @@ namespace TCGA_Scrapper.Utilities
         {
             Directory.CreateDirectory(dir);
 
-            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromMinutes(1) })
+            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromMinutes(10) })
             {
                 int counter = 1;
                 foreach (string url in urls)
