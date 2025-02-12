@@ -1,4 +1,5 @@
 ﻿using DataLayer.Repository;
+using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -17,26 +18,27 @@ namespace TCGA_Scrapper
 
         private const string NO_DOWNLOAD_URL_ERROR = "No download url, exception: ";
         private const string NO_NORMALIZED_ERROR = "No pancan normalized, exception: ";
+        private const string NO_PROJ_DIR_ERROR = "Project directory not provided.";
 
         private static IList<string> firstLevelUrls = new List<string>();
         private static IList<string> secondLevelUrls = new List<string>();
         private static IList<string> downloadUrls = new List<string>();
 
+        private static ISimpleFileRepository _repo;
+        private static IConfiguration _configuration;
+
         static async Task Main(string[] args)
         {
-            //ScrapeWeb();
+            ScrapeWeb();
 
-            //await DownloadAndUnpackFiles();
+            await DownloadAndUnpackFiles();
 
-            //await UploadToDatabse();
-
-            var repo = new MinioRepository();
-            var scans = await repo.ReadAll();
+            await UploadToDatabse();
         }
 
         private static async Task UploadToDatabse()
         {
-            ISimpleFileRepository repo = new MinioRepository();
+            InitializeRepository();
 
             var filePaths = FileUtils.GetAllFilesFromDirectory(DECOMPRESSED_FILES_PATH);
             var contentType = "text/tab-separated-values";
@@ -46,7 +48,7 @@ namespace TCGA_Scrapper
                 var objectName = Path.GetFileName(filePath);
                 try
                 {
-                    await repo.Create(objectName, filePath, contentType);
+                    await _repo.Create(objectName, filePath, contentType);
                     Console.WriteLine($"Successfully uploaded {objectName}");
                 }
                 catch (Exception ex)
@@ -54,6 +56,28 @@ namespace TCGA_Scrapper
                     Console.WriteLine($"Failed to upload {objectName}: {ex.Message}");
                 }
             }
+        }
+
+        private static void InitializeRepository()
+        {
+            var dir = Directory.GetParent(AppContext.BaseDirectory)?.Parent?.Parent?.Parent?.FullName;
+
+            if (dir == null)
+            {
+                Console.WriteLine(NO_PROJ_DIR_ERROR);
+                return;
+            }
+
+            _configuration = new ConfigurationBuilder()
+                .SetBasePath(dir)
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var endpoint = _configuration["MinIO:Endpoint"];
+            var accessKey = _configuration["MinIO:AccessKey"];
+            var secretKey = _configuration["MinIO:SecretKey"];
+
+            _repo = new MinioRepository(endpoint, accessKey, secretKey);
         }
 
         private static async Task DownloadAndUnpackFiles()

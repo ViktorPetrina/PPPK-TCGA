@@ -1,35 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
-using Minio;
-using Minio.ApiEndpoints;
+﻿using Minio;
 using Minio.DataModel.Args;
-using System.Net.Mime;
-using System.Security.AccessControl;
 
 namespace DataLayer.Repository
 {
-    // TODO: 
-    // rijesiti konfiguraciju, ako se dohvaca po currentDirectoryju onda se treba mijenjati za svaki projekt
     public class MinioRepository : ISimpleFileRepository
     {
         private readonly IMinioClient _client;
-        private readonly IConfiguration _configuration;
 
-        public MinioRepository()
+        private const string BUCKET_NAME = "scans";
+
+        public MinioRepository(string endpoint, string accessKey, string secretKey)
         {
-            var basePath = Path.GetFullPath
-            (
-                Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\DataLayer")
-            );
-
-            _configuration = new ConfigurationBuilder()
-                .SetBasePath(basePath)
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            var endpoint = _configuration["MinIO:Endpoint"];
-            var accessKey = _configuration["MinIO:AccessKey"];
-            var secretKey = _configuration["MinIO:SecretKey"];
-
             _client = new MinioClient()
                 .WithEndpoint(endpoint)
                 .WithCredentials(accessKey, secretKey)
@@ -38,8 +19,6 @@ namespace DataLayer.Repository
 
         public async Task Create(string objectName, string filePath, string contentType)
         {
-            var bucketName = _configuration["MinIO:BucketName"];
-
             var fileInfo = new FileInfo(filePath);
 
             if (!fileInfo.Exists)
@@ -50,7 +29,7 @@ namespace DataLayer.Repository
             using (var fileStream = fileInfo.OpenRead())
             {
                 await _client.PutObjectAsync(new PutObjectArgs()
-                    .WithBucket(bucketName)
+                    .WithBucket(BUCKET_NAME)
                     .WithObject(objectName)
                     .WithStreamData(fileStream)
                     .WithObjectSize(fileStream.Length)
@@ -60,13 +39,12 @@ namespace DataLayer.Repository
 
         public async Task<IEnumerable<string>> ReadAll()
         {
-            var bucketName = _configuration["MinIO:BucketName"];
-            var objects = _client.ListObjectsEnumAsync(new ListObjectsArgs().WithBucket(bucketName));
+            var objects = _client.ListObjectsEnumAsync(new ListObjectsArgs().WithBucket(BUCKET_NAME));
             IList<string> result = new List<string>();
 
             await foreach (var item in objects)
             {
-                result.Add(ReadTSVFile(bucketName, item.Key).Result);
+                result.Add(ReadTSVFile(BUCKET_NAME, item.Key).Result);
                 Console.WriteLine("Added tsv file");
             }
 
