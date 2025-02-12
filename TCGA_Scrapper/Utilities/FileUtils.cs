@@ -4,6 +4,8 @@ namespace TCGA_Scrapper.Utilities
 {
     public static class FileUtils
     {
+        private const string FILE_TYPE = "tsv";
+
         public static IEnumerable<string> GetAllFilesFromDirectory(string directory)
         {
             if (Directory.Exists(directory))
@@ -32,12 +34,14 @@ namespace TCGA_Scrapper.Utilities
 
             using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromMinutes(10) })
             {
-                int counter = 1;
                 foreach (string url in urls)
                 {
                     string fileName = Path.GetFileName(new Uri(url).LocalPath);
 
-                    string uniqueFileName = $"{Path.GetFileNameWithoutExtension(fileName)}_{counter}{Path.GetExtension(fileName)}";
+                    int startIndex = url.IndexOf("TCGA.") + "TCGA.".Length;
+                    int endIndex = url.IndexOf(".sampleMap");
+
+                    string uniqueFileName = $"{url.Substring(startIndex, endIndex - startIndex)}{Path.GetExtension(fileName)}";
 
                     string filePath = Path.Combine(dir, uniqueFileName);
 
@@ -52,8 +56,6 @@ namespace TCGA_Scrapper.Utilities
                     {
                         Console.WriteLine($"Download timeout. Exception: {e.Message}");
                     }
-
-                    counter++;
                 }
             }
         }
@@ -67,7 +69,7 @@ namespace TCGA_Scrapper.Utilities
                 try
                 {
                     string fileName = Path.GetFileNameWithoutExtension(file);
-                    string destination = Path.Combine(path, fileName);
+                    string destination = Path.Combine(path, $"{fileName}.{FILE_TYPE}");
                     DecompressFile(file, destination);
                     Console.WriteLine($"File {file} extracted successfully to {destination}.");
                 }
