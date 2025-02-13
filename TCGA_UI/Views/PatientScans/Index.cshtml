@@ -1,10 +1,10 @@
-﻿@model IEnumerable<TCGA_UI.Models.PatientScan>
+﻿@model IEnumerable<TCGA_UI.ViewModels.PatientScanVM>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Patients</h1>
+<h1>Patient cancer scans</h1>
 
 <table class="table">
     <thead>
@@ -28,9 +28,9 @@
                 @Html.DisplayFor(modelItem => item.CancerCohort)
             </td>
             <td>
-                @Html.ActionLink("Gene expresions", "Details", new { id = item.Id }, new { @class = "btn btn-outline-primary" })
+                @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-outline-primary" })
             </td>
         </tr>
-    }
+}
     </tbody>
 </table>

@@ -1,8 +1,10 @@
-﻿using DataLayer.Repository;
+﻿using DataLayer.Models;
+using DataLayer.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
 using TCGA_UI.Models;
+using TCGA_UI.ViewModels;
 
 namespace TCGA_UI.Controllers
 {
@@ -15,11 +17,17 @@ namespace TCGA_UI.Controllers
             _repo = repo;
         }
 
-        public async Task<ActionResult> IndexAsync()
+        public async Task<ActionResult> Index()
         {
             var scans = await _repo.ReadAll();
+            var scanVms = scans.ToList().Select(ps => new PatientScanVM
+            {
+                Id = ps.Id,
+                CancerCohort = CohortType.Instances.FirstOrDefault(c => c.Code == ps.CancerCohort)?.Name,
+                GeneExpresions = ps.GeneExpresions
+            });
 
-            return View(scans);
+            return View(scanVms);
         }
 
         public async Task<ActionResult> Details(string id)
