@@ -4,6 +4,8 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using TCGA_Scrapper.Utilities;
+using TCGA_UI.Mapping;
+using TCGA_UI.Models;
 
 namespace TCGA_Scrapper
 {
@@ -24,19 +26,36 @@ namespace TCGA_Scrapper
         private static IList<string> secondLevelUrls = new List<string>();
         private static IList<string> downloadUrls = new List<string>();
 
-        private static ISimpleFileRepository _repo;
+        private static ISimpleFileRepository _fileRepo;
+        private static ISimpleRepository<PatientScan> _patientScanRepo;
         private static IConfiguration _configuration;
 
         static async Task Main(string[] args)
         {
-            ScrapeWeb();
+            //ScrapeWeb();
 
-            await DownloadAndUnpackFiles();
+            //await DownloadAndUnpackFiles();
 
-            await UploadToDatabse();
+            //await UploadToMinioDatabase();
+
+            await ReadAndUploadToMongoDB();
         }
 
-        private static async Task UploadToDatabse()
+        public static async Task ReadAndUploadToMongoDB()
+        {
+            InitializeRepository();
+
+            var scans = await _fileRepo.ReadAll();
+            var patientScans = PatientScansMapper.Map(scans);
+
+            foreach (var scan in patientScans)
+            {
+                await _patientScanRepo.Insert(scan);
+                Console.WriteLine("Scan inserted to mongoDB");
+            }
+        }
+
+        public static async Task UploadToMinioDatabase()
         {
             InitializeRepository();
 
@@ -48,7 +67,7 @@ namespace TCGA_Scrapper
                 var objectName = Path.GetFileName(filePath);
                 try
                 {
-                    await _repo.Create(objectName, filePath, contentType);
+                    await _fileRepo.Create(objectName, filePath, contentType);
                     Console.WriteLine($"Successfully uploaded {objectName}");
                 }
                 catch (Exception ex)
@@ -77,17 +96,19 @@ namespace TCGA_Scrapper
             var accessKey = _configuration["MinIO:AccessKey"];
             var secretKey = _configuration["MinIO:SecretKey"];
 
-            _repo = new MinioRepository(endpoint, accessKey, secretKey);
+            _fileRepo = new MinioRepository(endpoint, accessKey, secretKey);
+
+            _patientScanRepo = new MongoRepository();
         }
 
-        private static async Task DownloadAndUnpackFiles()
+        public static async Task DownloadAndUnpackFiles()
         {
             downloadUrls = File.ReadLines(DOWNLOAD_URLS_PATH).ToList();
             await FileUtils.DownloadFiles(COMPRESSED_FILES_PATH, downloadUrls);
             FileUtils.DecompressFilesToDirectory(DECOMPRESSED_FILES_PATH, Directory.GetFiles(COMPRESSED_FILES_PATH, "*.gz"));
         }
 
-        private static void ScrapeWeb()
+        public static void ScrapeWeb()
         {
             using (IWebDriver driver = new ChromeDriver())
             {

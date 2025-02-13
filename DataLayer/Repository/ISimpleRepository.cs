@@ -1,8 +1,8 @@
 ﻿namespace DataLayer.Repository
 {
-    public interface ISimpleFileRepository
+    public interface ISimpleRepository<T> where T : class
     {
-        Task Create(string objectName, string filePath, string contentType);
-        Task<IEnumerable<string>> ReadAll();
+        Task Insert(T entity);
+        Task<IEnumerable<T>> ReadAll();
     }
 }

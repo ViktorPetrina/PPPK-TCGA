@@ -1,5 +1,6 @@
 ﻿using Minio;
 using Minio.DataModel.Args;
+using TCGA_UI.Models;
 
 namespace DataLayer.Repository
 {
@@ -37,15 +38,17 @@ namespace DataLayer.Repository
             }
         }
 
-        public async Task<IEnumerable<string>> ReadAll()
+        public async Task<IEnumerable<KeyValuePair<string, List<string>>>> ReadAll()
         {
             var objects = _client.ListObjectsEnumAsync(new ListObjectsArgs().WithBucket(BUCKET_NAME));
-            IList<string> result = new List<string>();
+            var result = new List<KeyValuePair<string, List<string>>>();
 
             await foreach (var item in objects)
             {
-                result.Add(ReadTSVFile(BUCKET_NAME, item.Key).Result);
-                Console.WriteLine("Added tsv file");
+                string scans = ReadTSVFile(BUCKET_NAME, item.Key).Result;
+                var lines = RemoveRows(scans);
+                string cohort = item.Key.Substring(0, item.Key.Length - 4);
+                result.Add(new KeyValuePair<string, List<string>>(cohort, new List<string>(lines)));
             }
 
             return result;
@@ -81,5 +84,21 @@ namespace DataLayer.Repository
             }
         }
 
+        private List<string> RemoveRows(string scans)
+        {
+            var geneExpressionProperties = typeof(GeneExpresion)
+                .GetProperties()
+                .Select(p => p.Name);
+
+            var lines = scans.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+
+            var filteredScans = lines.Where(line =>
+            {
+                var firstColumn = line.Split('\t').FirstOrDefault();
+                return geneExpressionProperties.Contains(firstColumn);
+            });
+
+            return filteredScans.ToList();
+        }
     }
 }
