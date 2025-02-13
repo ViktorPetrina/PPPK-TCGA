@@ -1,0 +1,36 @@
+﻿@model IEnumerable<TCGA_UI.Models.PatientScan>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Patients</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CancerCohort)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CancerCohort)
+            </td>
+            <td>
+                @Html.ActionLink("Gene expresions", "Details", new { id = item.Id }, new { @class = "btn btn-outline-primary" })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

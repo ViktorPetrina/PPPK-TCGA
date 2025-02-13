@@ -1,0 +1,93 @@
+﻿@model TCGA_UI.Models.GeneExpresion
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h3>Cancer gene expressions</h3>
+<br />
+<div>
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.C6orf150)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.C6orf150)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CCL5)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CCL5)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CXCL10)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CXCL10)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TMEM173)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TMEM173)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CXCL9)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CXCL9)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CXCL11)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CXCL11)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NFKB1)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NFKB1)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IKBKE)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IKBKE)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IRF3)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IRF3)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TREX1)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TREX1)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ATM)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ATM)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IL6)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IL6)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IL8)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IL8)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+</div>

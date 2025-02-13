@@ -32,13 +32,13 @@ namespace TCGA_Scrapper
 
         static async Task Main(string[] args)
         {
-            //ScrapeWeb();
+            ScrapeWeb();
 
-            //await DownloadAndUnpackFiles();
+            await DownloadAndUnpackFiles();
 
-            //await UploadToMinioDatabase();
+            await UploadToMinioDatabase();
 
-            await ReadAndUploadToMongoDB();
+            await ReadAndUploadToMongoDB(); 
         }
 
         public static async Task ReadAndUploadToMongoDB()

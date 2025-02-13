@@ -1,4 +1,5 @@
 using DataLayer.Repository;
+using TCGA_UI.Models;
 
 namespace TCGA_UI
 {
@@ -8,12 +9,12 @@ namespace TCGA_UI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<ISimpleRepository<PatientScan>, MongoRepository>();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -28,12 +29,7 @@ namespace TCGA_UI
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
-            var repo = new MinioRepository();
-            repo.ReadAll();
-
             app.Run();
-
-            
         }
     }
 }
